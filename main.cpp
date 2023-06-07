@@ -58,6 +58,20 @@ void post_render_hook(UGameViewportClient* viewport_client, UCanvas* canvas) {
         if (curr_level) {
             for (int j = 0; j < curr_level->NearActors.Count; j++) {
                 auto actor = curr_level->NearActors.Objects[j];
+                //Auto Clicker ArmWrestlingTable
+                if (actor && actor->IsA(armwreslingtable)) {
+                    curr_armwresling_component = ((ARBArmWreslingTable*)actor)->GetLocallyWatchedPanel();
+                    if (curr_armwresling_component && curr_armwresling_component->IsArmWreslingRoundInProgress()) {
+                        const auto cursor_position = curr_armwresling_component->GetCursorPosition();
+                        if (cursor_position > 0.1f) {
+                            const auto zone_end = 1.f - curr_armwresling_component->SuccessZoneOffset;
+                            if (zone_end >= cursor_position && zone_end - cursor_position <= 0.03f) {
+                                bClick = true;
+                                continue;
+                            }
+                        }
+                    }
+                }
                 //NPC ESP
                 if (actor && actor->RootComponent && actor->IsA(rbnpc)) {
                     NpcESP(actor, controller, canvas);
@@ -74,23 +88,10 @@ void post_render_hook(UGameViewportClient* viewport_client, UCanvas* canvas) {
                     continue;
                 }
                 if (actor && actor->RootComponent && actor->IsA(rbposter)) {
-                    //printf("Actor Name: [%s]\n", actor->GetName().c_str());
-                    if (actor->RootComponent->IsVisible() == true) ItemESP(actor, controller, canvas);
-                    continue;
-                }
-                //Auto Clicker ArmWrestlingTable
-                if (actor && actor->IsA(armwreslingtable)) {
-                    curr_armwresling_component = ((ARBArmWreslingTable*)actor)->GetLocallyWatchedPanel();
-                    if (curr_armwresling_component && curr_armwresling_component->IsArmWreslingRoundInProgress()) {
-                        const auto cursor_position = curr_armwresling_component->GetCursorPosition();
-                        if (cursor_position > 0.1f) {
-                            const auto zone_end = 1.f - curr_armwresling_component->SuccessZoneOffset;
-                            if (zone_end >= cursor_position && zone_end - cursor_position <= 0.03f) {
-                                bClick = true;
-                                continue;
-                            }
-                        }
+                    if (actor->RootComponent->IsVisible() == true) {
+                        ItemESP(actor, controller, canvas);
                     }
+                    continue;
                 }
             }
         }
@@ -98,7 +99,12 @@ void post_render_hook(UGameViewportClient* viewport_client, UCanvas* canvas) {
     post_render_original(viewport_client, canvas);
 }
 
+bool updateRBPoster = false;
+
 void process_event_hook(UObject* caller, UObject* fn, void* parms) {
+    if (fn == leaveChair) {
+        updateRBPoster = true;
+    }
     process_event_original(caller, fn, parms);
 }
 
@@ -114,6 +120,12 @@ void init() {
     rbpickup = objectArray->FindObject("Class OPP.RBPickup");
     rbposter = objectArray->FindObject("BlueprintGeneratedClass Base_PropagandaPoster_BP.Base_PropagandaPoster_BP_C");
     armwreslingtable = objectArray->FindObject("Class OPP.RBArmWreslingTable");
+    leaveChair = objectArray->FindObject("Function SASChair_ChairAnimBP.SASChair_ChairAnimBP_C.AnimNotify_ChairLeave");
+    //auto fonts = objectArray->FindObjectsByString("Font");
+    //for (auto elem : fonts) {
+    //    printf("Font: [%s]\n", elem->GetFullName().c_str());
+    //}
+
 
     MH_Initialize();
     if (MH_CreateHook(VFTable[post_render_index], &post_render_hook, reinterpret_cast<void**>(&post_render_original)) != MH_OK) {
@@ -157,6 +169,10 @@ void Run(HMODULE hMODULE) {
                 bClick = false;
             }
         }
-        if(!rbposter) rbposter = objectArray->FindObject("BlueprintGeneratedClass Base_PropagandaPoster_BP.Base_PropagandaPoster_BP_C");
+        if (updateRBPoster) {
+            printf("Updating!\n");
+            if (!rbposter) rbposter = objectArray->FindObject("BlueprintGeneratedClass Base_PropagandaPoster_BP.Base_PropagandaPoster_BP_C");
+            if (rbposter) updateRBPoster = false;
+        }
     }
 }
