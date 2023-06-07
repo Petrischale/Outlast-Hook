@@ -2,6 +2,53 @@
 #include "engine.h"
 #include <cstdint>
 
+// Class Engine.ActorComponent
+// Size: 0xb8 (Inherited: 0x28)
+struct UActorComponent : UObject {
+	char pad_00[0x90];
+};
+
+// Class Engine.SceneComponent
+// Size: 0x220 (Inherited: 0xb8)
+struct USceneComponent : UActorComponent {
+	char pad_B8[0x8]; // 0xb8(0x08)
+	char PhysicsVolume[0x08]; // 0xc0(0x08)
+	struct USceneComponent* AttachParent; // 0xc8(0x08)
+	struct FName AttachSocketName; // 0xd0(0x08)
+	struct TArray<struct USceneComponent*> AttachChildren; // 0xd8(0x10)
+	struct TArray<struct USceneComponent*> ClientAttachedChildren; // 0xe8(0x10)
+	char pad_F8[0x2c]; // 0xf8(0x2c)
+	struct FVector RelativeLocation; // 0x124(0x0c)
+	struct FRotator RelativeRotation; // 0x130(0x0c)
+	struct FVector RelativeScale3D; // 0x13c(0x0c)
+	struct FVector ComponentVelocity; // 0x148(0x0c)
+	char bComponentToWorldUpdated : 1; // 0x154(0x01)
+	char pad_154_1 : 1; // 0x154(0x01)
+	char bAbsoluteLocation : 1; // 0x154(0x01)
+	char bAbsoluteRotation : 1; // 0x154(0x01)
+	char bAbsoluteScale : 1; // 0x154(0x01)
+	char bVisible : 1; // 0x154(0x01)
+	char bShouldBeAttached : 1; // 0x154(0x01)
+	char bShouldSnapLocationWhenAttached : 1; // 0x154(0x01)
+	char bShouldSnapRotationWhenAttached : 1; // 0x155(0x01)
+	char bShouldUpdatePhysicsVolume : 1; // 0x155(0x01)
+	char bHiddenInGame : 1; // 0x155(0x01)
+	char bBoundsChangeTriggersStreamingDataRebuild : 1; // 0x155(0x01)
+	char bUseAttachParentBound : 1; // 0x155(0x01)
+	char bAllowPrecomputedVisibilityOnMovable : 1; // 0x155(0x01)
+	char bStoreLightingScenarioProperties : 1; // 0x155(0x01)
+	char pad_155_7 : 1; // 0x155(0x01)
+	char pad_156[0x1]; // 0x156(0x01)
+	char Mobility; // 0x157(0x01)
+	char DetailMode; // 0x158(0x01)
+	char PhysicsVolumeChangedDelegate; // 0x159(0x01)
+	char pad_15A[0x2]; // 0x15a(0x02)
+	int32_t VisibilityId; // 0x15c(0x04)
+	char pad_160[0xc0]; // 0x160(0xc0)
+
+	bool IsVisible(); // Function Engine.SceneComponent.IsVisible // (Native|Public|BlueprintCallable|BlueprintPure|Const) // @ game+0x1d7c334
+};
+
 struct AActor : UObject {
 	bool bDebugFlag; // 0x28(0x01)
 	char pad_29[0x7]; // 0x29(0x07)

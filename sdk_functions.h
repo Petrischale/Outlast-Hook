@@ -28,5 +28,7 @@ namespace functions {
 
 	extern UObject* IsPanelActive_FN;
 
+	extern UObject* IsVisible_FN;
+
 	void init();
 }

@@ -160,3 +160,11 @@ float URBArmWreslingPanelComponent::GetCursorPosition() {
 //    ProcessEvent(functions::IsPanelActive_FN, &params);
 //    return params.return_value;
 //}
+
+bool USceneComponent::IsVisible() {
+    struct {
+        bool return_value;
+    }params{};
+    ProcessEvent(functions::IsVisible_FN, &params);
+    return params.return_value;
+}
