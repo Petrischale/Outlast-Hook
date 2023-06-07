@@ -6,14 +6,13 @@ extern bool bClick;
 extern UObject* engine_font;
 extern UWorld* world;
 extern TUObjectArray* objectArray;
-extern UObject* leaveChair;
+
 extern UObject* rbnpc;
 extern UObject* rbplayer;
 extern UObject* rbpickup;
 extern UObject* rbposter;
-extern URBArmWreslingPanelComponent* curr_armwresling_component;
 extern UObject* armwreslingtable;
-extern UObject* hackingpanel;
+extern URBArmWreslingPanelComponent* curr_armwresling_component;
 
 void RenderText(UCanvas* canvas, FVector2D position, std::string text, FLinearColor color);
 void NpcESP(AActor* actor, APlayerController* controller, UCanvas* canvas);

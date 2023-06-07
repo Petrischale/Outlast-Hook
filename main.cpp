@@ -73,6 +73,11 @@ void post_render_hook(UGameViewportClient* viewport_client, UCanvas* canvas) {
                     ItemESP(actor, controller, canvas);
                     continue;
                 }
+                if (actor && actor->RootComponent && actor->IsA(rbposter)) {
+                    //printf("Actor Name: [%s]\n", actor->GetName().c_str());
+                    if (actor->RootComponent->IsVisible() == true) ItemESP(actor, controller, canvas);
+                    continue;
+                }
                 //Auto Clicker ArmWrestlingTable
                 if (actor && actor->IsA(armwreslingtable)) {
                     curr_armwresling_component = ((ARBArmWreslingTable*)actor)->GetLocallyWatchedPanel();
@@ -107,9 +112,8 @@ void init() {
     rbnpc = objectArray->FindObject("Class OPP.RBNPC");
     rbplayer = objectArray->FindObject("Class OPP.RBPlayer");
     rbpickup = objectArray->FindObject("Class OPP.RBPickup");
-    //rbposter = objectArray->FindObject("BlueprintGeneratedClass Base_PropagandaPoster_BP.Base_PropagandaPoster_BP_C");
+    rbposter = objectArray->FindObject("BlueprintGeneratedClass Base_PropagandaPoster_BP.Base_PropagandaPoster_BP_C");
     armwreslingtable = objectArray->FindObject("Class OPP.RBArmWreslingTable");
-    //hackingpanel = objectArray->FindObject("Class OPP.RBHackPanelComponent");
 
     MH_Initialize();
     if (MH_CreateHook(VFTable[post_render_index], &post_render_hook, reinterpret_cast<void**>(&post_render_original)) != MH_OK) {
@@ -153,7 +157,6 @@ void Run(HMODULE hMODULE) {
                 bClick = false;
             }
         }
-        //if (!hackingpanel) hackingpanel = objectArray->FindObject("Class OPP.RBHackPanelComponent");
-        //if (!rbposter) rbposter = objectArray->FindObject("BlueprintGeneratedClass Base_PropagandaPoster_BP.Base_PropagandaPoster_BP_C");
+        if(!rbposter) rbposter = objectArray->FindObject("BlueprintGeneratedClass Base_PropagandaPoster_BP.Base_PropagandaPoster_BP_C");
     }
 }

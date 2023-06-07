@@ -10,16 +10,13 @@ UObject* rbnpc = 0x0;
 UObject* rbplayer = 0x0;
 UObject* rbpickup = 0x0;
 UObject* rbposter = 0x0;
-URBArmWreslingPanelComponent* curr_armwresling_component = 0x0;
 UObject* armwreslingtable = 0x0;
-UObject* hackingpanel = 0x0;
+URBArmWreslingPanelComponent* curr_armwresling_component = 0x0;
+
 
 std::pair<std::string, FLinearColor> find_valid_target_text(AActor* actor) {
     if (actor->GetName().find("LockPick") != std::string::npos) return std::make_pair(std::string("LockPick"), FLinearColor{ 1.f, 1.f, 1.f, 1.f });
     if (actor->GetName().find("Weapon") != std::string::npos) return std::make_pair(std::string("Weapon"), FLinearColor{ 1.f, 1.f, 1.f, 1.f });
-
-    //if (actor->GetName().find("Propaganda") != std::string::npos) return std::make_pair(std::string("Poster"), FLinearColor{0.f, 1.f, 1.f, 1.f});
-    if (actor->GetName().find("CollectibleDocument") != std::string::npos) return std::make_pair(std::string("Document"), FLinearColor{ 0.f, 1.f, 1.f, 1.f });
 
     if (actor->GetName().find("SmallBattery") != std::string::npos) return std::make_pair(std::string("Small Battery"), FLinearColor{ 1.f, 1.f, 0.f, 1.f });
     if (actor->GetName().find("Battery") != std::string::npos) return std::make_pair(std::string("Large Battery"), FLinearColor{ 1.f, 1.f, 0.f, 1.f });
@@ -32,6 +29,8 @@ std::pair<std::string, FLinearColor> find_valid_target_text(AActor* actor) {
     if (actor->GetName().find("HealthGain-Consumable") != std::string::npos) return std::make_pair(std::string("Large Medicine"), FLinearColor{ 0.f, 1.f, 0.f, 1.f });
 
     if (actor->GetName().find("QuestItem") != std::string::npos) return std::make_pair(std::string("Quest Item"), FLinearColor{ 1.f, 0.f, 1.f, 1.f });
+    if (actor->GetName().find("Poster") != std::string::npos) return std::make_pair(std::string("Poster"), FLinearColor{ 0.f, 1.f, 1.f, 1.f });
+    if (actor->GetName().find("CollectibleDocument") != std::string::npos) return std::make_pair(std::string("Document"), FLinearColor{ 0.f, 1.f, 1.f, 1.f });
     return std::make_pair(std::string("ERROR"), FLinearColor{ 0.f, 0.f, 0.f, 0.f });
 }
 
@@ -141,7 +140,7 @@ void ItemESP(AActor* actor, APlayerController* controller, UCanvas* canvas) {
     if (name.first == "ERROR") {
         return;
     }
-    if (name.first != "Quest Item" && name.first != "Document") {
+    if (name.first != "Quest Item" && name.first != "Document" && name.first != "Poster") {
         auto local_player = controller->K2_GetPawn();
         if (!local_player) return;
         const auto myLocation = local_player->K2_GetActorLocation();
@@ -149,7 +148,7 @@ void ItemESP(AActor* actor, APlayerController* controller, UCanvas* canvas) {
         if (((ARBPickup*)actor)->bHasBeenPickedUp == true) return;
         const FVector item_location = actor->K2_GetActorLocation();
         const float dist = myLocation.DistTo(item_location) * 0.01f;
-        if (dist > 50.0f) return;
+        if (dist > 35.0f) return;
     }
     FVector location, BoxExtent;    
     actor->GetActorBounds(false, location, BoxExtent, false);

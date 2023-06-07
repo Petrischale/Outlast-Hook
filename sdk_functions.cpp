@@ -29,6 +29,8 @@ namespace functions {
 
 	UObject* IsPanelActive_FN = 0;
 
+	UObject* IsVisible_FN = 0;
+
 	void init() {
 		K2_GetActorLocation_FN = objectArray->FindObject("Function Engine.Actor.K2_GetActorLocation");
 
@@ -55,5 +57,7 @@ namespace functions {
 		GetLocallyWatchedPanel_FN = objectArray->FindObject("Function OPP.RBArmWreslingTable.GetLocallyWatchedPanel");
 
 		IsPanelActive_FN = objectArray->FindObject("Function OPP.RBInteractiblePanelComponent.IsPanelActive");
+
+		IsVisible_FN = objectArray->FindObject("Function Engine.SceneComponent.IsVisible");
 	}
 }
