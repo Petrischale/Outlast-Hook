@@ -15,6 +15,8 @@ char nameSig[] = "\x48\x8d\x0d\x00\x00\x00\x00\xe8\x00\x00\x00\x00\x48\x8d\x85\x
 char nameMask[] = "xxx????x????xxx????xxx?xxxx?xxxx";
 
 bool bClick = false;
+bool NVOn = false;
+
 using Clock = std::chrono::steady_clock;
 std::chrono::time_point<std::chrono::steady_clock> start, now;
 std::chrono::milliseconds duration;
@@ -40,8 +42,6 @@ void sigscan() {
     nameAddr = nameAddr + 7 + nameOffset;
     NamePool = (FNamePool*)(nameAddr);
 }
-
-bool rbposter_corr = false;
 
 void post_render_hook(UGameViewportClient* viewport_client, UCanvas* canvas) {
     RenderText(canvas, { 50.f, 15.f }, "Fellner Hook", { 1.f,0.0f, 0.f,1.f });
@@ -114,6 +114,7 @@ void init() {
     auto viewport_client = local_player->ViewportClient;
     void** VFTable = viewport_client->VFTable;
     functions::init();
+
     engine_font = objectArray->FindObject("Font Roboto.Roboto");
     rbnpc = objectArray->FindObject("Class OPP.RBNPC");
     rbplayer = objectArray->FindObject("Class OPP.RBPlayer");
@@ -121,11 +122,11 @@ void init() {
     rbposter = objectArray->FindObject("BlueprintGeneratedClass Base_PropagandaPoster_BP.Base_PropagandaPoster_BP_C");
     armwreslingtable = objectArray->FindObject("Class OPP.RBArmWreslingTable");
     leaveChair = objectArray->FindObject("Function SASChair_ChairAnimBP.SASChair_ChairAnimBP_C.AnimNotify_ChairLeave");
+
     //auto fonts = objectArray->FindObjectsByString("Font");
     //for (auto elem : fonts) {
     //    printf("Font: [%s]\n", elem->GetFullName().c_str());
     //}
-
 
     MH_Initialize();
     if (MH_CreateHook(VFTable[post_render_index], &post_render_hook, reinterpret_cast<void**>(&post_render_original)) != MH_OK) {
@@ -145,17 +146,13 @@ void Run(HMODULE hMODULE) {
     AllocConsole();
     freopen_s(&fp, "CONOUT$", "w", stdout);
     K32GetModuleInformation(GetCurrentProcess(), GetModuleHandleA(nullptr), &g_BaseModule, sizeof(MODULEINFO));
-    bool welcomed = false;
     INPUT input{ 0 };
     input.type = INPUT_MOUSE;
     start = Clock::now();
+    std::cout << "Welcome to Fellner Hook - The best Ware in Town!" << std::endl;
+    sigscan();
+    init();
     while (true) {
-        if (!welcomed) {
-            std::cout << "Welcome to Fellner Hook - The best Ware in Town!" << std::endl;
-            welcomed = true;
-            sigscan();
-            init();
-        }
         if (bClick) {
             now = Clock::now();
             duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - start);
@@ -173,6 +170,10 @@ void Run(HMODULE hMODULE) {
             printf("Updating!\n");
             if (!rbposter) rbposter = objectArray->FindObject("BlueprintGeneratedClass Base_PropagandaPoster_BP.Base_PropagandaPoster_BP_C");
             if (rbposter) updateRBPoster = false;
+        }
+        if (GetAsyncKeyState(VK_F1) & 1) {
+            printf("Hit F1\n");
+            NVOn = !NVOn;
         }
     }
 }

@@ -153,18 +153,26 @@ float URBArmWreslingPanelComponent::GetCursorPosition() {
     return params.return_value;
 }
 
-//bool URBInteractiblePanelComponent::IsPanelActive() {
-//    struct {
-//        bool return_value;
-//    }params{};
-//    ProcessEvent(functions::IsPanelActive_FN, &params);
-//    return params.return_value;
-//}
-
 bool USceneComponent::IsVisible() {
     struct {
         bool return_value;
     }params{};
     ProcessEvent(functions::IsVisible_FN, &params);
     return params.return_value;
+}
+
+void URBNVComponent::Server_RequestNVState(ENVState newState) {
+    struct {
+        ENVState new_state;
+    }params{};
+    params.new_state = newState;
+    ProcessEvent(functions::RequestNVState_FN, &params);
+}
+
+bool URBNVComponent::IsNVOn() {
+    struct {
+        bool ret_val;
+    }params{};
+    ProcessEvent(functions::IsNVOn_FN, &params);
+    return params.ret_val;
 }

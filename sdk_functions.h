@@ -26,9 +26,11 @@ namespace functions {
 
 	extern UObject* GetLocallyWatchedPanel_FN;
 
-	extern UObject* IsPanelActive_FN;
-
 	extern UObject* IsVisible_FN;
+
+	extern UObject* RequestNVState_FN;
+
+	extern UObject* IsNVOn_FN;
 
 	void init();
 }

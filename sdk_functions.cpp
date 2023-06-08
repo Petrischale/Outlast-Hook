@@ -27,9 +27,13 @@ namespace functions {
 
 	UObject* GetLocallyWatchedPanel_FN = 0;
 
-	UObject* IsPanelActive_FN = 0;
-
 	UObject* IsVisible_FN = 0;
+
+	UObject* RequestNVState_FN = 0;
+
+	UObject* IsNVOn_FN = 0;
+
+	UObject* AddXP_FN = 0;
 
 	void init() {
 		K2_GetActorLocation_FN = objectArray->FindObject("Function Engine.Actor.K2_GetActorLocation");
@@ -56,8 +60,11 @@ namespace functions {
 
 		GetLocallyWatchedPanel_FN = objectArray->FindObject("Function OPP.RBArmWreslingTable.GetLocallyWatchedPanel");
 
-		IsPanelActive_FN = objectArray->FindObject("Function OPP.RBInteractiblePanelComponent.IsPanelActive");
-
 		IsVisible_FN = objectArray->FindObject("Function Engine.SceneComponent.IsVisible");
+
+		RequestNVState_FN = objectArray->FindObject("Function OPP.RBNVComponent.Server_RequestNVState");
+
+		IsNVOn_FN = objectArray->FindObject("Function OPP.RBNVComponent.IsNVOn");
+
 	}
 }

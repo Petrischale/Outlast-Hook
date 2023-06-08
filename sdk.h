@@ -897,13 +897,6 @@ struct ARBNPC : ARBPawn {
 	char pad_55A8[0x8]; // 0x55a8(0x08)
 };
 
-// Class OPP.RBActor
-// Size: 0x250 (Inherited: 0x248)
-struct ARBActor : AActor {
-	bool bAllowAttachmentReplication; // 0x248(0x01)
-	char pad_249[0x7]; // 0x249(0x07)
-};
-
 // Class OPP.RBArmWreslingPanelComponent
 // Size: 0x8a0 (Inherited: 0x7a0)
 struct URBArmWreslingPanelComponent : UObject {
@@ -948,7 +941,6 @@ struct URBArmWreslingPanelComponent : UObject {
 	float GetCursorPosition(); // Function OPP.RBArmWreslingPanelComponent.GetCursorPosition // (Final|Native|Public|BlueprintCallable|BlueprintPure|Const) // @ game+0x1d0c09c
 };
 
-
 // Class OPP.RBArmWreslingTable
 // Size: 0x3e0 (Inherited: 0x248)
 struct ARBArmWreslingTable : AActor {
@@ -984,43 +976,68 @@ struct ARBArmWreslingTable : AActor {
 	struct URBArmWreslingPanelComponent* GetLocallyWatchedPanel(); // Function OPP.RBArmWreslingTable.GetLocallyWatchedPanel // (Final|Native|Public|BlueprintCallable|BlueprintPure|Const) // @ game+0x1d0c160
 };
 
-// Class OPP.RBInteractiblePanelComponent
-// Size: 0x7a0 (Inherited: 0x600)
-struct URBInteractiblePanelComponent {
-	char pad_00[0x600]; // 0x600
-	char pad_02[0x101];
-	bool bPanelInUse; // 0x701(0x01)
-	char pad_01[0x9F];
-	//bool IsPanelActive(); // Function OPP.RBInteractiblePanelComponent.IsPanelActive // (Final|Native|Public|BlueprintCallable|BlueprintPure|Const) // @ game+0x1d83f8c
+// Enum OPP.ENVState
+enum class ENVState : uint8_t {
+	Off = 0,
+	OnPowered = 1,
+	OnUnPowered = 2,
+	ENVState_MAX = 3
 };
 
-// Enum OPP.EHackQuadrantState
-enum class EHackQuadrantState : uint8_t {
-	Failure = 0,
-	Neutral = 1,
-	Success = 2,
-	EHackQuadrantState_MAX = 3
+// Class OPP.RBNVComponent
+// Size: 0x530 (Inherited: 0x430)
+struct URBNVComponent : UObject {
+	char pad_00[0x408];
+	float PoweredOnIntensity; // 0x430(0x04)
+	float NoBatteryIntensity; // 0x434(0x04)
+	float PoweredOnAttenuationRadius; // 0x438(0x04)
+	float NoBatteryAttenuationRadius; // 0x43c(0x04)
+	float PoweredOnInnerConeAngle; // 0x440(0x04)
+	float NoBatteryInnerConeAngle; // 0x444(0x04)
+	float PoweredOnOuterConeAngle; // 0x448(0x04)
+	float NoBatteryOuterConeAngle; // 0x44c(0x04)
+	struct FVector translationOffset; // 0x450(0x0c)
+	struct FRotator RotationOffset; // 0x45c(0x0c)
+	struct UAkAudioEvent* TurnOnSoundEvent; // 0x468(0x08)
+	struct UAkAudioEvent* TurnOnLowBatterySoundEvent; // 0x470(0x08)
+	struct UAkAudioEvent* OutOfBatterySoundEvent; // 0x478(0x08)
+	struct UAkAudioEvent* RepoweredSoundEvent; // 0x480(0x08)
+	struct UAkAudioEvent* TurnOffSoundEvent; // 0x488(0x08)
+	struct UAkAudioEvent* RemoteTurnOnSoundEvent; // 0x490(0x08)
+	struct UAkAudioEvent* RemoteTurnOnLowBatterySoundEvent; // 0x498(0x08)
+	struct UAkAudioEvent* RemoteOutOfBatterySoundEvent; // 0x4a0(0x08)
+	struct UAkAudioEvent* RemoteRepoweredSoundEvent; // 0x4a8(0x08)
+	struct UAkAudioEvent* RemoteTurnOffSoundEvent; // 0x4b0(0x08)
+	struct UAkAudioEvent* StartLowBatterySoundEvent; // 0x4b8(0x08)
+	struct UAkAudioEvent* RemoteStartLowBatterySoundEvent; // 0x4c0(0x08)
+	struct UAkAudioEvent* StopLowBatterySoundEvent; // 0x4c8(0x08)
+	struct UAkAudioEvent* RemoteStopLowBatterySoundEvent; // 0x4d0(0x08)
+	float LowBatterySoundLoopOnDuration; // 0x4d8(0x04)
+	float LowBatterySoundLoopOffDuration; // 0x4dc(0x04)
+	char OnNVStateChanged[0x10]; // 0x4e0(0x10)
+	char OnLowBatteryStateChanged[0x10]; // 0x4f0(0x10)
+	struct ARBPawn* Owner; // 0x500(0x08)
+	struct ARBSpectatorPawn* SpectatorOwner; // 0x508(0x08)
+	bool bForcedDisabled; // 0x510(0x01)
+	enum class ENVState NVState; // 0x511(0x01)
+	bool bIsBatteryLow; // 0x512(0x01)
+	char pad_513[0x1d]; // 0x513(0x1d)
+
+	void TurnOn(bool bPowered); // Function OPP.RBNVComponent.TurnOn // (Final|Native|Public|BlueprintCallable) // @ game+0x1dabb24
+	void TurnOff(); // Function OPP.RBNVComponent.TurnOff // (Final|Native|Public|BlueprintCallable) // @ game+0x1dabb10
+	void Server_RequestNVState(enum class ENVState newState); // Function OPP.RBNVComponent.Server_RequestNVState // (Net|NetReliableNative|Event|Protected|NetServer) // @ game+0x1dab9e8
+	void OnRep_NVState(enum class ENVState oldState); // Function OPP.RBNVComponent.OnRep_NVState // (Final|Native|Protected) // @ game+0x1dab940
+	void OnRep_IsBatteryLow(); // Function OPP.RBNVComponent.OnRep_IsBatteryLow // (Final|Native|Protected) // @ game+0x1dab918
+	bool IsNVOn(); // Function OPP.RBNVComponent.IsNVOn // (Final|Native|Public|BlueprintCallable|BlueprintPure|Const) // @ game+0x1dab368
+	bool IsBatteryLow(); // Function OPP.RBNVComponent.IsBatteryLow // (Final|Native|Public|BlueprintCallable|BlueprintPure|Const) // @ game+0x1dab350
+	enum class ENVState GetCurrentState(); // Function OPP.RBNVComponent.GetCurrentState // (Final|Native|Public|BlueprintCallable|BlueprintPure|Const) // @ game+0x1dab2f4
 };
 
-// Class OPP.RBHackPanelComponent
-// Size: 0x1300 (Inherited: 0x7a0)
-struct URBHackPanelComponent : URBInteractiblePanelComponent {
-	char pad_00[0x898];
-	int32_t NumberOfQuadrant; // 0x1038(0x04)
-	char pad_01[0xF8];
-	struct TArray<enum class EHackQuadrantState> QuadrantStates; // 0x1130(0x10)
-	char pad_1140[0x10]; // 0x1140(0x10)
-	float needleRatio; // 0x1150(0x04)
-	char pad_02[0x1B0];
-};
-
-// Class OPP.RBInteractibleContainer
-// Size: 0x4d0 (Inherited: 0x300)
-struct ARBInteractibleContainer {
-	char pad_00[0x300];
-	char pad_300[0x1C0]; // 0x300(0x70)
-	struct URBHackPanelComponent* HackPanel; // 0x4c0(0x08)
-	char pad_4C8[0x8]; // 0x4c8(0x08)
+// Class OPP.RBActor
+// Size: 0x250 (Inherited: 0x248)
+struct ARBActor : AActor {
+	bool bAllowAttachmentReplication; // 0x248(0x01)
+	char pad_249[0x7]; // 0x249(0x07)
 };
 
 // Class OPP.RBPickup

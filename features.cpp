@@ -14,6 +14,7 @@ UObject* rbposter = 0x0;
 UObject* armwreslingtable = 0x0;
 URBArmWreslingPanelComponent* curr_armwresling_component = 0x0;
 
+bool feature_NV_on = false;
 
 std::pair<std::string, FLinearColor> find_valid_target_text(AActor* actor) {
     if (actor->GetName().find("LockPick") != std::string::npos) return std::make_pair(std::string("LockPick"), FLinearColor{ 1.f, 1.f, 1.f, 1.f });
@@ -32,7 +33,7 @@ std::pair<std::string, FLinearColor> find_valid_target_text(AActor* actor) {
     if (actor->GetName().find("Poster") != std::string::npos) return std::make_pair(std::string("Poster"), FLinearColor{ 0.568627f , 0.117647f, 0.705882f, 1.f });
     if (actor->GetName().find("Propaganda") != std::string::npos) return std::make_pair(std::string("Poster"), FLinearColor{ 0.568627f , 0.117647f, 0.705882f, 1.f });
     if (actor->GetName().find("CollectibleDocument") != std::string::npos) return std::make_pair(std::string("Document"), FLinearColor{ 0.568627f , 0.117647f, 0.705882f, 1.f });
-    return std::make_pair(std::string("ERROR"), FLinearColor{ 0.f, 0.f, 0.f, 0.f });
+    return std::make_pair(std::string("ERROR") , FLinearColor{ 1.f, 0.f, 0.f, 1.f });
 }
 
 constexpr const char* ENPCTypeToString(ENPCType e) noexcept {
@@ -107,9 +108,15 @@ void NpcESP(AActor* actor, APlayerController* controller, UCanvas* canvas) {
 
 void PlayerESP(AActor* actor, APlayerController* controller, UCanvas* canvas) {
     //Infinite Stamina
-    if (actor == controller->Character) {
-        //printf("Stamina: [%f]\n", ((ARBPlayer*)actor)->stamina);
-        //((ARBPlayer*)actor)->stamina = 125.0f;
+    if (actor == controller->Character) { //TODO: Sync state when User should press F
+        if (NVOn && ((ARBPlayer*)actor)->NVComponent->NVState != ENVState::OnPowered && feature_NV_on != true) {
+            ((ARBPlayer*)actor)->NVComponent->Server_RequestNVState(ENVState::OnPowered);
+            feature_NV_on = true;
+        }
+        if (!NVOn && ((ARBPlayer*)actor)->NVComponent->NVState != ENVState::Off && feature_NV_on != false) {
+            ((ARBPlayer*)actor)->NVComponent->Server_RequestNVState(ENVState::Off);
+            feature_NV_on = false;
+        }
         return; //No need to draw box for yourself
     }
     bool is_visible = controller->LineOfSightTo(actor, { 0.0f, 0.0f, 0.0f }, false);
@@ -141,24 +148,6 @@ void ItemESP(AActor* actor, APlayerController* controller, UCanvas* canvas) {
     if (name.first == "ERROR") {
         return;
     }
-    //if (name.first != "Quest Item" && name.first != "Document" && name.first != "Poster") {
-    //    auto local_player = controller->K2_GetPawn();
-    //    if (!local_player) return;
-    //    const auto myLocation = local_player->K2_GetActorLocation();
-    //    if (!actor) return;
-    //    if (((ARBPickup*)actor)->bHasBeenPickedUp == true) return;
-    //    const FVector item_location = actor->K2_GetActorLocation();
-    //    const float dist = myLocation.DistTo(item_location) * 0.01f;
-    //    if (dist > 35.0f) return;
-    //    FVector location, BoxExtent;
-    //    actor->GetActorBounds(false, location, BoxExtent, false);
-    //    FVector2D w2s_result;
-    //    std::string name_dist = name.first + " [" + std::to_string((int)dist) + "m]";
-    //    if (controller->ProjectWorldLocationToScreen(location, w2s_result, false)) {
-    //        RenderText(canvas, w2s_result, name_dist, name.second);
-    //    }
-    //    return;
-    //}
     auto local_player = controller->K2_GetPawn();
     if (!local_player) return;
     const auto myLocation = local_player->K2_GetActorLocation();
@@ -174,10 +163,4 @@ void ItemESP(AActor* actor, APlayerController* controller, UCanvas* canvas) {
     if (controller->ProjectWorldLocationToScreen(location, w2s_result, false)) {
         RenderText(canvas, w2s_result, name_dist, name.second);
     }
-    //FVector location, BoxExtent;    
-    //actor->GetActorBounds(false, location, BoxExtent, false);
-    //FVector2D w2s_result;
-    //if (controller->ProjectWorldLocationToScreen(location, w2s_result, false)) {
-    //    RenderText(canvas, w2s_result, name.first, name.second);
-    //}
 }
